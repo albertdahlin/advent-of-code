@@ -1,29 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_COLS 8
-
-
 static int isDigit(char c)
 {
     return c >= '0' && c <= '9';
 }
-
 
 int main()
 {
     int part1 = 0;
     int part2 = 0;
 
-    char tok_mul[] = "mul(";
-    char tok_do[] = "do()";
-    char tok_dont[] = "don't()";
+    char mul_tok[] = "mul(";
+    int mul_idx = 0;
+    int mul_arg[2] = {0};
+    int mul_arg_idx = 0;
 
-    int idx_mul = 0;
-    int idx_do = 0;
-    int idx_dont = 0;
-    int mulArg[2] = {0};
-    int mulArgIdx = 0;
+    char do_tok[] = "do()";
+    int do_idx = 0;
+
+    char dont_tok[] = "don't()";
+    int dont_idx = 0;
+
 
     int isEnabled = 1;
 
@@ -34,55 +32,57 @@ int main()
             break;
         }
 
-        if (idx_mul == sizeof(tok_mul) - 1) {
-            if (isDigit(c) && mulArgIdx < 2) {
-                mulArg[mulArgIdx] = mulArg[mulArgIdx] * 10 + c - '0';
+        if (mul_idx == sizeof(mul_tok) - 1) {
+            // Matches token "mul("
+
+            if (isDigit(c) && mul_arg_idx < 2) {
+                mul_arg[mul_arg_idx] = mul_arg[mul_arg_idx] * 10 + c - '0';
                 continue;
-            } else if (c == ',' && mulArgIdx == 0) {
-                mulArgIdx++;
+            } else if (c == ',' && mul_arg_idx == 0) {
+                mul_arg_idx++;
                 continue;
-            } else if (c == ')' && mulArgIdx == 1) {
-                part1 += mulArg[0] * mulArg[1];
+            } else if (c == ')' && mul_arg_idx == 1) {
+                part1 += mul_arg[0] * mul_arg[1];
 
                 if (isEnabled) {
-                    part2 += mulArg[0] * mulArg[1];
+                    part2 += mul_arg[0] * mul_arg[1];
                 }
             }
-            idx_mul = 0;
-            mulArg[0] = 0;
-            mulArg[1] = 0;
-            mulArgIdx = 0;
+            mul_idx = 0;
+            mul_arg[0] = 0;
+            mul_arg[1] = 0;
+            mul_arg_idx = 0;
         }
 
-        if (c == tok_mul[idx_mul]) {
-            idx_mul++;
+        // Try matching tokens
+        if (c == mul_tok[mul_idx]) {
+            mul_idx++;
         } else {
-            idx_mul = 0;
+            mul_idx = 0;
         }
 
-        if (c == tok_do[idx_do] && c == tok_dont[idx_dont]) {
-            // Both do() and don't() have the same prefix
-            idx_do++;
-            idx_dont++;
-        } else if (c == tok_do[idx_do]) {
-            idx_do++;
-            idx_dont = 0;
-        } else if (c == tok_dont[idx_dont]) {
-            idx_dont++;
-            idx_do = 0;
+        if (c == do_tok[do_idx]) {
+            do_idx++;
         } else {
-            idx_do = 0;
-            idx_dont = 0;
+            do_idx = 0;
         }
 
-        if (idx_do == sizeof(tok_do) - 1) {
+        if (c == dont_tok[dont_idx]) {
+            dont_idx++;
+        } else {
+            dont_idx = 0;
+        }
+
+        if (do_idx == sizeof(do_tok) - 1) {
+            // Matches token "do()"
             isEnabled = 1;
-            idx_do = 0;
+            do_idx = 0;
         }
 
-        if (idx_dont == sizeof(tok_dont) - 1) {
+        if (dont_idx == sizeof(dont_tok) - 1) {
+            // Matches token "don't()"
             isEnabled = 0;
-            idx_dont = 0;
+            dont_idx = 0;
         }
     }
 
