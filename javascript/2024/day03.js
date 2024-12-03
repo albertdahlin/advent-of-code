@@ -11,7 +11,6 @@ for (const inst of input.matchAll(/mul\((\d+),(\d+)\)|do\(\)|don\'t\(\)/g)) {
     if (!inst) {
         break;
     }
-    console.log(inst[0]);
 
     if (inst[0] === "do()") {
         isEnabled = true;
