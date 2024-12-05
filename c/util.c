@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+#define isDigit(c) (c >= '0' && c <= '9')
+
 int compare(const void *a, const void *b) {
     int64_t int_a = *((int64_t*)a);
     int64_t int_b = *((int64_t*)b);
