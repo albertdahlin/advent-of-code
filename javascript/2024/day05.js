@@ -9,27 +9,29 @@ let part2 = 0;
 let rules = new Map();
 let updates = [];
 
-for (const line of input.split('\n')) {
-    let m = line.match(/(\d+)\|(\d+)/);
-    if (m) {
-        let [a, b] = m.slice(1).map((l) => parseInt(l, 10));
+let [rulesInput, updatesInput] = input.split('\n\n');
 
-        let nums = rules.get(a);
+for (let line of rulesInput.split('\n')) {
+    let [a, b] = line.split('|').map(Util.toInt);
 
-        if (!nums) {
-            nums = [];
-            rules.set(a, nums);
-        }
-        nums.push(b);
+    let nums = rules.get(a);
+
+    if (!nums) {
+        nums = [];
+        rules.set(a, nums);
+    }
+
+    nums.push(b);
+}
+
+for (let update of updatesInput.split('\n')) {
+    if (!update) {
         continue;
     }
-
-    m = line.split(',');
-
-    if (m && m.length > 1) {
-        updates.push(m.map((l) => parseInt(l, 10)));
-    }
+    update = update.split(',').map(Util.toInt);
+    updates.push(update);
 }
+
 
 for (let update of updates) {
     let fixed = fix(update);

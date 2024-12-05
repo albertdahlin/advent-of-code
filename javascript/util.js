@@ -12,3 +12,7 @@ Array.isEqual = function(arr1, arr2) {
 
     return true;
 }
+
+export function toInt(x) {
+    return parseInt(x, 10);
+}
