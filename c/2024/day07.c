@@ -22,6 +22,7 @@ uint64_t solve1(uint64_t n, uint64_t *nums, size_t len, uint64_t target)
     return n == target;
 }
 
+
 uint64_t solve2(uint64_t n, uint64_t *nums, size_t len, uint64_t target)
 {
     if (n > target) {
@@ -38,19 +39,19 @@ uint64_t solve2(uint64_t n, uint64_t *nums, size_t len, uint64_t target)
 
         /* "Concatenate" (||) the next number to the current number.
 
-           multiply the current number by 10^x, where x is the number of digits in the next number.
+           Multiply the current number by 10^x, where x is the
+           number of digits in the next number.
            Then add the next number to the result.
 
            123 || 456 = 123 * 1000 + 456 = 123000 + 456 = 123456
          */
-        uint64_t x = nums[0];
+        uint64_t x = 1;
 
-        while (x > 0) {
-            n *= 10;
-            x /= 10;
-        }
+        do {
+            x *= 10;
+        } while (x <= nums[0]);
 
-        n = n + nums[0];
+        n = x * n + nums[0];
 
         if (solve2(n, nums + 1, len - 1, target)) {
             return 1;
@@ -72,11 +73,10 @@ int main()
     size_t len = 0;
 
     while (!feof(stdin)) {
-        if (fscanf(stdin, "%" SCNu64, &target) == 0) {
+        if (fscanf(stdin, "%" SCNu64 ":", &target) == 0) {
             break;
         }
 
-        char c = fgetc(stdin);
         len = 0;
 
         while (1) {
@@ -86,11 +86,11 @@ int main()
 
             len++;
 
-            if (len == 32) {
+            if (len == sizeof(nums) / sizeof(nums[0])) {
                 break;
             }
 
-            c = fgetc(stdin);
+            char c = fgetc(stdin);
 
             if (c == '\n' || c == EOF) {
                 break;
