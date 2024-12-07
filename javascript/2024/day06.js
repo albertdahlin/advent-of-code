@@ -46,14 +46,6 @@ function turnRight(dir) {
     return (dir + 1) % 4;
 }
 
-function gridAt(row, col) {
-    if (grid[row] === undefined) {
-        return undefined;
-    }
-
-    return grid[row][col];
-}
-
 function step(x, y, dir) {
     switch (dir) {
         case 0:
@@ -72,6 +64,7 @@ function step(x, y, dir) {
 
     return [x, y];
 }
+
 function toStr(x, y) {
     return `${x},${y}`;
 }
@@ -80,57 +73,11 @@ function isOutside(x, y) {
     return x < 0 || x >= width || y < 0 || y >= height;
 }
 
-function wouldLoop(x, y, dir) {
-    let [x1, y1] = step(x, y, dir);
+function walk(x, y, blocked) {
+    let dir = 0;
+    let visited = new Map();
+    let wouldLoop = false;
 
-    if (isOutside(x1, y1)) {
-        return false;
-    }
-
-    if (blocked.has(toStr(x1, y1))) {
-        return false;
-    }
-
-    dir = turnRight(dir);
-    let obst = toStr(x1, y1);
-
-    let localVisited = new Map();
-
-    while (true) {
-        let key = toStr(x, y);
-        let vdirs = visited.get(key) || new Set();
-        let ldirs = localVisited.get(key) || new Set();
-
-        if (vdirs.has(dir) || ldirs.has(dir)) {
-            return true;
-        }
-
-        [x1, y1] = step(x, y, dir);
-
-        if (isOutside(x1, y1)) {
-            return false;
-        }
-
-        let key1 = toStr(x1, y1);
-
-        if (blocked.has(key1) || key1 == obst) {
-            dir = turnRight(dir);
-        } else {
-            key = toStr(x, y);
-            let dirs = localVisited.get(key);
-
-            if (dirs === undefined) {
-                dirs = new Set();
-                localVisited.set(key, dirs);
-            }
-            dirs.add(dir);
-            x = x1;
-            y = y1;
-        }
-    }
-}
-
-function walkUntilBlocked(x, y, dir) {
     while (true) {
         let [x1, y1] = step(x, y, dir);
 
@@ -142,44 +89,43 @@ function walkUntilBlocked(x, y, dir) {
             visited.set(key, dirs);
         }
 
-        dirs.add(dir);
-
-        if (wouldLoop(x, y, dir)) {
-            obstacles.add(toStr(x1, y1));
+        if (dirs.has(dir)) {
+            wouldLoop = true;
+            break;
         }
 
+        dirs.add(dir);
+
         if (blocked.has(toStr(x1, y1))) {
-            return [x, y];
+            dir = turnRight(dir);
+            continue;
         }
 
         if (isOutside(x1, y1)) {
-            return false;
+            break;
         }
 
         x = x1;
         y = y1;
     }
+
+    return [visited, wouldLoop];
 }
 
-let dir = 0;
-let visited = new Map();
-// 2118 high
-// 2117 high
-// 2116 high
-let obstacles = new Set();
 
-while (true) {
-    let pos = walkUntilBlocked(x, y, dir);
+let [ visited, _ ] = walk(x, y, blocked);
 
-    if (!pos) {
-        // exited
-        break;
-    } else {
-        [x, y] = pos;
-        dir = turnRight(dir);
+console.log(visited.size);
+
+visited.delete(toStr(x, y));
+
+for (const [key, _] of visited) {
+    let [_, wouldLoop] = walk(x, y, new Set(blocked).add(key));
+
+    if (wouldLoop) {
+        part2 += 1;
     }
 }
 
-console.log(visited.size);
-console.log(obstacles.size);
+console.log(part2);
 

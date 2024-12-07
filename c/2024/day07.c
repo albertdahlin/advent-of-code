@@ -39,11 +39,16 @@ uint64_t solve2(uint64_t n, uint64_t *nums, size_t len, uint64_t target)
 
         /* "Concatenate" (||) the next number to the current number.
 
+
            Multiply the current number by 10^x, where x is the
            number of digits in the next number.
            Then add the next number to the result.
 
            123 || 456 = 123 * 1000 + 456 = 123000 + 456 = 123456
+
+           n * pow(10, log10(next) + 1) + next
+
+           `log` and `pow` are slow, so we use a loop instead.
          */
         uint64_t x = 1;
 
@@ -99,8 +104,8 @@ int main()
 
         if (solve1(nums[0], &nums[1], len - 1, target)) {
             part1 += target;
-        }
-        if (solve2(nums[0], &nums[1], len - 1, target)) {
+            part2 += target;
+        } else if (solve2(nums[0], &nums[1], len - 1, target)) {
             part2 += target;
         }
     }
