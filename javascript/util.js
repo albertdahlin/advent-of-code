@@ -16,3 +16,8 @@ Array.isEqual = function(arr1, arr2) {
 export function toInt(x) {
     return parseInt(x, 10);
 }
+
+export function parseNumbers(s) {
+    return s.matchAll(/\d+/g).map(toInt);
+}
+
