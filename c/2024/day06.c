@@ -19,7 +19,7 @@ Point_t visited[VISITED_SIZE] = {0};
 
 
 
-Point_t Point(int x, int y)
+static Point_t Point(int x, int y)
 {
     return (Point_t){x, y};
 }
@@ -49,7 +49,7 @@ DIR DIR_fromPoint(Point_t a, Point_t b)
     }
 }
 
-void set(uint64_t i, uint64_t *bitmask)
+static void set(uint64_t i, uint64_t *bitmask)
 {
     uint64_t idx = i >> 6;
     uint64_t mask = 1ULL << (i & 63);
@@ -57,7 +57,7 @@ void set(uint64_t i, uint64_t *bitmask)
     bitmask[idx] |= mask;
 }
 
-void unset(uint64_t i, uint64_t *bitmask)
+static void unset(uint64_t i, uint64_t *bitmask)
 {
     uint64_t idx = i >> 6;
     uint64_t mask = 1ULL << (i & 63);
@@ -65,7 +65,7 @@ void unset(uint64_t i, uint64_t *bitmask)
     bitmask[idx] &= ~mask;
 }
 
-int isSet(uint64_t i, uint64_t *bitmask)
+static int isSet(uint64_t i, uint64_t *bitmask)
 {
     uint64_t idx = i >> 6;
     uint64_t mask = 1ULL << (i & 63);
@@ -73,32 +73,32 @@ int isSet(uint64_t i, uint64_t *bitmask)
     return (bitmask[idx] & mask) > 0;
 }
 
-void setPos(Point_t p, uint64_t *bitmask)
+static void setPos(Point_t p, uint64_t *bitmask)
 {
     set(p.y * gridSize + p.x, bitmask);
 }
 
-void setVisited(Point_t p, DIR dir)
+static void setVisited(Point_t p, DIR dir)
 {
     set(p.y * gridSize * 4 + p.x * 4 + dir, visitedMask);
 }
 
-void unsetPos(Point_t p, uint64_t *bitmask)
+static void unsetPos(Point_t p, uint64_t *bitmask)
 {
     unset(p.y * gridSize + p.x, bitmask);
 }
 
-int isPosSet(Point_t p, uint64_t *bitmask)
+static int isPosSet(Point_t p, uint64_t *bitmask)
 {
     return isSet(p.y * gridSize + p.x, bitmask);
 }
 
-int isVisited(Point_t p, DIR dir)
+static int isVisited(Point_t p, DIR dir)
 {
     return isSet(p.y * gridSize * 4 + p.x * 4 + dir, visitedMask);
 }
 
-Point_t step(Point_t p, DIR dir)
+static Point_t step(Point_t p, DIR dir)
 {
     switch (dir) {
         case UP:
@@ -117,17 +117,17 @@ Point_t step(Point_t p, DIR dir)
     return p;
 }
 
-DIR turnRight(DIR dir)
+static DIR turnRight(DIR dir)
 {
     return (DIR)((dir + 1) % 4);
 }
 
-int isOutside(Point_t p)
+static int isOutside(Point_t p)
 {
     return p.x < 0 || p.y < 0 || p.x >= gridSize || p.y >= gridSize;
 }
 
-int solve1(Point_t start)
+int markVisitedLocations(Point_t start)
 {
     Point_t pos = start;
     DIR dir = UP;
@@ -175,11 +175,10 @@ int wouldLoop(Point_t start, DIR dir)
 
         if (isVisited(pos, dir)) {
             return 1;
-        } else {
-            setVisited(pos, dir);
         }
 
         if (isPosSet(next, blocked)) {
+            setVisited(pos, dir);
             dir = turnRight(dir);
             continue;
         }
@@ -226,7 +225,7 @@ int main()
         col += 1;
     }
 
-    int visited_len = solve1(start);
+    int visited_len = markVisitedLocations(start);
 
     for (int i = 1; i < visited_len; i++) {
         Point_t pos = visited[i];
