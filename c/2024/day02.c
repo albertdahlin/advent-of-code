@@ -66,7 +66,7 @@ int main()
         int level;
         int idx = 0;
 
-        while (fscanf(stdin, "%u", &level) == 1) {
+        while (fscanf(stdin, "%d", &level) == 1) {
             levels[idx] = level;
             idx += 1;
             if (fgetc(stdin) == '\n') {

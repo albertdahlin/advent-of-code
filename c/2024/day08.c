@@ -85,8 +85,8 @@ int main()
         for (size_t i = 0; i < points.len; i++) {
             Point_t p1 = points.item[i];
 
-            if (!Grid_isMaskSetAt(p1, 1, &grid)) {
-                Grid_setMaskAt(p1, 1, &grid);
+            if (!Grid_isBitSetAt(p1, 2, &grid)) {
+                Grid_setBitAt(p1, 2, &grid);
                 part2++;
             }
 
@@ -102,21 +102,21 @@ int main()
                     continue;
                 }
 
-                if (!Grid_isMaskSetAt(antinode, 0, &grid)) {
-                    Grid_setMaskAt(antinode, 0, &grid);
+                if (!Grid_isBitSetAt(antinode, 1, &grid)) {
+                    Grid_setBitAt(antinode, 1, &grid);
                     part1++;
                 }
 
                 while (1) {
-                    if (!Grid_isMaskSetAt(antinode, 1, &grid)) {
-                        Grid_setMaskAt(antinode, 1, &grid);
+                    if (!Grid_isBitSetAt(antinode, 2, &grid)) {
+                        Grid_setBitAt(antinode, 2, &grid);
                         part2++;
                     }
-
                     antinode = Point_add(antinode, delta);
                     if (Point_isOutside(antinode, grid.width, grid.height)) {
                         break;
                     }
+
                 }
             }
         }

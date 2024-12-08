@@ -41,7 +41,7 @@ int main()
     int64_t result = 0;
 
     for (size_t i = 0; i < count; i++) {
-        result += abs(left[i] - right[i]);
+        result += labs(left[i] - right[i]);
     }
 
     printf("%ld\n", result);

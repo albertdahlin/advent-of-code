@@ -34,12 +34,12 @@ typedef struct PointArray {
     size_t cap;
 } PointArray_t;
 
-PointArray_t PointArray(size_t len)
+PointArray_t PointArray(size_t size)
 {
     PointArray_t pa = {0};
-    pa.item = calloc(len, sizeof(Point_t));
+    pa.item = calloc(size, sizeof(Point_t));
     pa.len = 0;
-    pa.cap = len;
+    pa.cap = size;
 
     return pa;
 }
@@ -47,6 +47,9 @@ PointArray_t PointArray(size_t len)
 void PointArray_push(PointArray_t *pa, Point_t p)
 {
     if (pa->len == pa->cap) {
+        if (pa->cap == 0) {
+            pa->cap = 1;
+        }
         pa->cap *= 2;
         pa->item = realloc(pa->item, pa->cap * sizeof(Point_t));
     }
@@ -87,25 +90,31 @@ void Grid_free(Grid_t grid)
     free(grid.data);
 }
 
-void Grid_setMaskAt(Point_t p, int bit, Grid_t *grid)
+void Grid_setMaskAt(Point_t p, uint8_t mask, Grid_t *grid)
 {
     if (Point_isOutside(p, grid->width, grid->height)) {
         return;
     }
 
-    uint8_t mask = 1 << bit;
-
     grid->data[p.y * grid->height + p.x] |= mask;
 }
 
-int Grid_isMaskSetAt(Point_t p, int bit, Grid_t *grid)
+int Grid_getMaskAt(Point_t p, uint8_t mask, Grid_t *grid)
 {
     if (Point_isOutside(p, grid->width, grid->height)) {
         return 0;
     }
 
-    uint8_t mask = 1 << bit;
+    return grid->data[p.y * grid->height + p.x] & mask;
+}
 
-    return (grid->data[p.y * grid->height + p.x] & mask) > 0;
+void Grid_setBitAt(Point_t p, uint8_t bit, Grid_t *grid)
+{
+    Grid_setMaskAt(p, 1 << bit, grid);
+}
+
+int Grid_isBitSetAt(Point_t p, uint8_t bit, Grid_t *grid)
+{
+    return Grid_getMaskAt(p, 1 << bit, grid) > 0;
 }
 

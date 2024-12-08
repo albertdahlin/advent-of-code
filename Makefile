@@ -1,32 +1,34 @@
 
-CC_FLAGS= -Wall
+CC_FLAGS=
 ZIG_FLAGS=
 
 SRC_C=$(wildcard c/*/*.c)
 SRC_ZIG=$(wildcard zig/*/*.zig)
 
-OUT=$(SRC_C:c/%.c=build/%.c) $(SRC_ZIG:zig/%.zig=build/%.zig)
+OUT=$(SRC_C:c/%.c=bin/%.c) $(SRC_ZIG:zig/%.zig=bin/%.zig)
 DIR=$(dir $(OUT))
 
 
-all: $(DIR) $(OUT)
+dev: CC_FLAGS+=-g -Wall -Wextra -Wpedantic
+dev: all
 
-optimize: CC_FLAGS += -O3
-optimize: ZIG_FLAGS += -O ReleaseFast
+optimize: CC_FLAGS+=-O3 -s
+optimize: ZIG_FLAGS+=-O ReleaseFast
 optimize: all
 
+all: $(DIR) $(OUT)
 
-build/%.c: c/%.c c/*.c
-	gcc $(CC_FLAGS) -o $@ $<
+bin/%.c: c/%.c c/*.c
+	gcc -o $@ $< $(CC_FLAGS)
 
 
-build/%.zig: zig/%.zig
+bin/%.zig: zig/%.zig
 	zig build-exe $< $(ZIG_FLAGS) -femit-bin=$@
 
-build/%:
+bin/%:
 	mkdir -p $@
 
 
 clean:
-	rm -rf build
+	rm -rf bin
 

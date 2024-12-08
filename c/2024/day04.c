@@ -19,7 +19,7 @@ char charAt(int row, int col)
 int isXmas(int row, int col, int dr, int dc)
 {
 
-    for (int i = 1; i < sizeof(xmas) - 1; i++) {
+    for (size_t i = 1; i < sizeof(xmas) - 1; i++) {
         row += dr;
         col += dc;
         char c = charAt(row, col);
