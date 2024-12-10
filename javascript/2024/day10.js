@@ -9,7 +9,7 @@ let col = 0;
 let grid = [];
 let starts = [];
 
-for (const c of input) {
+for (const c of input.trim()) {
     if (c === '\n') {
         row += 1;
         col = 0;
@@ -28,7 +28,6 @@ for (const c of input) {
 
 let size = grid[0].length;
 
-
 let part1 = 0;
 let part2 = 0;
 
@@ -37,26 +36,27 @@ for (const [row, col] of starts) {
     part1 += p1;
     part2 += p2;
 }
+
 console.log(part1);
 console.log(part2);
 
 function heightAt(row, col) {
     if (row < 0 || row >= size || col < 0 || col >= size) {
-        return 0;
+        return undefined;
     }
 
     return grid[row][col];
 }
 
 function walk(row, col, visited) {
-    if (row < 0 || row >= size || col < 0 || col >= size) {
+    let height = heightAt(row, col);
+
+    if (height === undefined) {
         return [ 0, 0 ];
     }
 
-    let h = heightAt(row, col);
-    let key = `${row},${col}`;
-
-    if (h == 9) {
+    if (height == 9) {
+        let key = `${row},${col}`;
         if (visited.has(key)) {
             return [ 0, 1 ];
         }
@@ -64,38 +64,16 @@ function walk(row, col, visited) {
         return [ 1, 1 ];
     }
 
-    h += 1;
-
     let part1 = 0;
     let part2 = 0;
 
-    let up = heightAt(row - 1, col);
-    let down = heightAt(row + 1, col);
-    let left = heightAt(row, col - 1);
-    let right = heightAt(row, col + 1);
-
-    if (up === h) {
-        let [ p1, p2 ] = walk(row - 1, col, visited);
-        part1 += p1;
-        part2 += p2;
-    }
-
-    if (down === h) {
-        let [ p1, p2 ] = walk(row + 1, col, visited);
-        part1 += p1;
-        part2 += p2;
-    }
-
-    if (left === h) {
-        let [ p1, p2 ] = walk(row, col - 1, visited);
-        part1 += p1;
-        part2 += p2;
-    }
-
-    if (right === h) {
-        let [ p1, p2 ] = walk(row, col + 1, visited);
-        part1 += p1;
-        part2 += p2;
+    for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+        let nextHeight = heightAt(row + dr, col + dc);
+        if (height + 1 === nextHeight) {
+            let [ p1, p2 ] = walk(row + dr, col + dc, visited);
+            part1 += p1;
+            part2 += p2;
+        }
     }
 
     return [ part1, part2 ];
