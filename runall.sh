@@ -30,7 +30,7 @@ for i in {1..25}; do
         fi
         printf "% 7s" ${OUT[3]#user	0m}
         printf "% 15s" ${OUT[0]}
-        printf "% 15s" ${OUT[1]}
+        printf "% 16s" ${OUT[1]}
         echo ""
     fi
 done

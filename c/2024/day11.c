@@ -2,109 +2,90 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-#define SIZE 32768
+#define SIZE 65536
 
 uint64_t mapKey[SIZE] = {0};
 uint64_t mapValue[SIZE] = {0};
-uint64_t collision = 0;
+uint64_t cache = 0;
+uint64_t hash(uint64_t key) {
+    key ^= key >> 32;
+    key *= 0xd6e8feb86659fd93ULL;
+    key ^= key >> 32;
 
-uint64_t murmur64(uint64_t x) {
-    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
-    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
-    x = x ^ (x >> 31);
-    return x;
+    return key;
 }
 
-uint64_t pack(uint64_t n, uint64_t iterations)
+uint64_t pack(uint64_t n, uint_fast8_t iterations)
 {
-    return n * 80 + iterations + 1;
+    return (n << 7) | iterations;
 }
 
-uint64_t get(uint64_t n, uint64_t iterations)
+uint64_t get(uint64_t key)
+{
+    uint64_t idx = hash(key) % SIZE;
+
+    return (mapKey[idx] == key) * mapValue[idx];
+}
+
+void set(uint64_t key, uint64_t val)
+{
+    uint64_t idx = hash(key) % SIZE;
+
+
+    mapKey[idx] = key;
+    mapValue[idx] = val;
+
+}
+
+uint64_t table_pow10[15] = {
+    1, 10, 100, 1000, 10000, 100000,
+    1000000, 10000000, 100000000, 1000000000,
+    10000000000, 100000000000, 1000000000000,
+    10000000000000, 100000000000000
+};
+
+uint64_t countDigits(uint64_t n)
+{
+    uint64_t digits = 0;
+
+    while (table_pow10[digits] <= n) {
+        digits += 1;
+    }
+
+    return digits;
+}
+
+uint64_t countStones(uint64_t n, uint_fast8_t iterations)
 {
     uint64_t key = pack(n, iterations);
-
-    uint64_t idx = murmur64(key) % SIZE;
-
-    for (size_t i = 0; i < 1; i++) {
-        if (mapKey[idx] == key) {
-            return mapValue[idx];
-        }
-
-        //idx = murmur64(key + i) % SIZE;
-        idx = (idx + 1) % SIZE;
-    }
-
-    return 0;
-}
-
-void set(uint64_t n, uint64_t iterations, uint64_t val)
-{
-    uint64_t key = pack(n, iterations);
-    if (key >= (1ULL << 32)) {
-        printf("TOO BIG: %" PRIu64 "\n", n);
-    }
-
-    uint64_t idx = murmur64(key) % SIZE;
-
-    for (size_t i = 0; i < 1; i++) {
-        if (mapKey[idx] == key) {
-            return;
-        }
-
-        if (mapKey[idx] == 0) {
-            mapKey[idx] = key;
-            mapValue[idx] = val;
-            return;
-        }
-        collision++;
-
-        //printf("COLLISION: %" PRIu64 " %zu\n", idx, i);
-        //idx = murmur64(key + i) % SIZE;
-        idx = (idx + 1) % SIZE;
-    }
-}
-
-uint64_t countStones(uint64_t num, uint64_t iterations)
-{
-    uint64_t len = get(num, iterations);
-
+    uint64_t len = get(key);
 
     if (len > 0) {
         return len;
     }
-    uint64_t n = num;
 
     len = 1;
 
-    for (uint64_t i = 0; i < iterations; i++) {
+    while (iterations-- > 0) {
         if (n == 0) {
             n = 1;
             continue;
         }
 
-        uint64_t digits = 0;
-        uint64_t pow10 = 1;
-        do {
-            pow10 *= 10;
-            digits += 1;
-        } while (pow10 <= n);
+        uint64_t digits = countDigits(n);
 
         if (digits % 2 == 0) {
-            pow10 = 1;
-            for (uint64_t j = 0; j < digits / 2; j++) {
-                pow10 *= 10;
-            }
-            uint64_t left = n / pow10;
+            uint64_t pow10 = table_pow10[digits / 2];
             uint64_t right = n % pow10;
-            len += countStones(right, iterations - i - 1);
-            n = left;
+            len += countStones(right, iterations);
+            n /= pow10;
             continue;
         }
 
         n *= 2024;
     }
-    set(num, iterations, len);
+
+    set(key, len);
 
     return len;
 }
@@ -121,13 +102,14 @@ int main()
         if (numbersMatches != 1) {
             break;
         }
-        //printf("NUM: %" PRIu64 "\n", n);
+
         part1 += countStones(n, 25);
         part2 += countStones(n, 75);
     }
 
+
     printf("%" PRIu64 "\n", part1);
     printf("%" PRIu64 "\n", part2);
-    printf("%" PRIu64 "\n", collision);
+    printf("CACHE %" PRIu64 "\n", cache);
 }
 

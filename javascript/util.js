@@ -18,6 +18,26 @@ export function toInt(x) {
 }
 
 export function parseNumbers(s) {
-    return s.matchAll(/\d+/g).map(toInt);
+    return Array.from(s.matchAll(/\d+/g).map(toInt));
+}
+
+Map.prototype.hasVec = function(v) {
+    return this.has(v.join(','));
+}
+
+Map.prototype.getVec = function(v) {
+    return this.get(v.join(','));
+}
+
+Map.prototype.setVec = function(v, val) {
+    this.set(v.join(','), val);
+}
+
+Map.prototype.deleteVec = function(v) {
+    this.delete(v.join(','));
+}
+
+Map.fromVec = function(arr) {
+    return new Map(arr.map(a => [a.join(','), a]));
 }
 
