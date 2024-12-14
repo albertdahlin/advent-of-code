@@ -18,7 +18,7 @@ export function toInt(x) {
 }
 
 export function parseNumbers(s) {
-    return Array.from(s.matchAll(/\d+/g).map(toInt));
+    return Array.from(s.matchAll(/[\d-]+/g).map(toInt));
 }
 
 Map.prototype.hasVec = function(v) {
