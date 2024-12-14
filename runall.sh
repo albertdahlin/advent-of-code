@@ -1,15 +1,25 @@
 #!/bin/bash
 
+YEAR=2024
+
+ANSWER=()
+ANSWER+=("DUMMY")
+
+while IFS= read -r line; do
+    LINE=$(echo "$line" | xargs)
+    ANSWER+=("$LINE")
+done < "answer/$YEAR.txt"
+
 case $1 in
     "c")
         RUNTIME=""
-        FILE=bin/2024/day
+        FILE=bin/$YEAR/day
         EXT=c
         ;;
 
     "js")
         RUNTIME=node
-        FILE=javascript/2024/day
+        FILE=javascript/$YEAR/day
         EXT=js
         ;;
     *)
@@ -24,14 +34,20 @@ for i in {1..25}; do
     if [ -f $FILE$N.$EXT ]; then
         printf "% 2s " $i
         if [ $RUNTIME ]; then
-            IFS=$'\n' read -r -d '' -a OUT <<< $( { time $RUNTIME $FILE$N.$EXT < input/2024/day$N.txt; } 2>&1 )
+            IFS=$'\n' read -r -d '' -a OUT <<< $( { time $RUNTIME $FILE$N.$EXT < input/$YEAR/day$N.txt; } 2>&1 )
         else
-            IFS=$'\n' read -r -d '' -a OUT <<< $( { time $FILE$N.$EXT < input/2024/day$N.txt; } 2>&1 )
+            IFS=$'\n' read -r -d '' -a OUT <<< $( { time $FILE$N.$EXT < input/$YEAR/day$N.txt; } 2>&1 )
         fi
         printf "% 7s" ${OUT[3]#user	0m}
         printf "% 15s" ${OUT[0]}
         printf "% 16s" ${OUT[1]}
-        echo ""
+        if [ "${ANSWER[i]}" != "${OUT[0]} ${OUT[1]}" ]; then
+            echo " FAIL, Expected: ${ANSWER[i]}"
+        else
+            echo ""
+        fi
+    else
+        printf "% 2s\n" $i
     fi
 done
 

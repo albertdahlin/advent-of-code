@@ -6,7 +6,7 @@
 
 uint64_t mapKey[SIZE] = {0};
 uint64_t mapValue[SIZE] = {0};
-uint64_t cache = 0;
+
 uint64_t hash(uint64_t key) {
     key ^= key >> 32;
     key *= 0xd6e8feb86659fd93ULL;
@@ -110,6 +110,5 @@ int main()
 
     printf("%" PRIu64 "\n", part1);
     printf("%" PRIu64 "\n", part2);
-    printf("CACHE %" PRIu64 "\n", cache);
 }
 
