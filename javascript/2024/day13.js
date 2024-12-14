@@ -5,7 +5,9 @@ const input = fs.readFileSync(0, 'utf-8').trim();
 
 
 let nums = [];
-let machines = [];
+let k = 10000000000000;
+let part1 = 0;
+let part2 = 0;
 
 for (let line of input.split('\n')) {
     if (line === '') {
@@ -16,130 +18,95 @@ for (let line of input.split('\n')) {
     nums.push([x, y]);
 
     if (nums.length === 3) {
-        machines.push(nums);
+        let [a, b, p] = nums;
+        part1 += solve1(a, b, p);
+        part2 += solve2(a, b, [p[0] + k, p[1] + k]);
         nums = [];
     }
 }
 
-let part1 = 0;
-let part2 = 0;
-
-/* 
-ax * a + bx * b = px + k
-ay * a + by * b = py + k
-
-ax = 94
-ay = 34
-
-bx = 22
-by = 67
-
-px = 10000000000000 + 8400
-py = 10000000000000 + 5400
-
-a(ax + ay) + b(bx + by) = px + py + 2k
-
-a*ka + b*kb = kp
-
-a + b*kb/ka = kp/ka
-
-a = kp/ka - b*kb/ka
-b = kp/kb - a*ka/kb
+console.log(part1);
+console.log(part2);
 
 
-sub
+/* Solution
 
-ax * a + bx * b - px = 0
-ay * a + by * b - py = 0
+Input is 3 vectors: a, b and p
+The input can be thought of as two lines:
+- Starting at (0, 0) with slope ay/ax
+- Starting at (px, py) with slope by/bx
 
-ax * a + bx * b - px = ay * a + by * b - py
+If the two lines intersects at (x, y) and x >= 0 AND x < px
 
-a(ax - ay) + b(bx - by) = px - py
+Then the number of presses on
+    a = x / ax
+    b = (px - x) / bx
 
 
-ka = ax - ay
-kb = bx - by
-kp = px - py
+f1(x) = x * ay/ax
+f2(x) = x * by/bx + k
 
-a*ka + b*kb = k + kp
+py = px * by/bx + k
 
-b = (k + kp)/kb - a*ka / kb
+k = py - px * by/bx
+
+f2(x) = x * by/bx + py - px * by/bx
+
+f1(x) = f2(x)
+
+x * ay/ax = x * by/bx + py - px * by/bx
+
+x * ay/ax - x * by/bx = py - px * by/bx
+x(ay/ax - by/bx) = py - px * by/bx
+
+x = (py - px * by/bx) / (ay/ax - by/bx)
 
 */
 
-for (let [aa, bb, pp] of machines) {
+function solve1(aa, bb, pp) {
+    let [a, b] = buttonCount(aa, bb, pp);
+
+    if (a !== undefined && b !== undefined && a < 100 && b < 100) {
+        return a * 3 + b;
+    }
+
+    return 0;
+}
+
+function solve2(aa, bb, pp) {
+    let [a, b] = buttonCount(aa, bb, pp);
+
+    if (a !== undefined && b !== undefined) {
+        return a * 3 + b;
+    }
+
+    return 0;
+}
+
+function buttonCount(aa, bb, pp) {
     let [ax, ay] = aa;
     let [bx, by] = bb;
     let [px, py] = pp;
 
-    let ka = ax - ay;
-    let kb = bx - by;
-    let kp = px - py;
-    let k = 0;//10000000000000;
-    let amax = 200;
-    let a = 0;
-    console.log('START', pp, amax);
+    let k = py - px * by / bx;
+    let x = Math.round((py - px * by / bx) / (ay / ax - by / bx));
+    let a = Math.round(x / ax);
+    let b = Math.round((px - x) / bx);
 
-    while (amax > 0) {
-        let b = (k + kp) / kb - a * ka / kb;
-        console.log(a, b, amax);
-
-        if (b === kp) {
-            console.log('BREAK', a, b);
-            break;
-        }
-        if (a * b >= kp) {
-            a -= amax;
-        } else {
-            a += amax;
-        }
-        amax = Math.floor(amax / 2);
-    }
-    continue;
-
-    //px += 10000000000000;
-    //py += 10000000000000;
-
-    let apush = Math.floor(Math.min(px / ax, py / ay));
-    let bpush = 0;
-    let count = [];
-
-    while (apush > 0) {
-        apush--;
-        bpush = Math.min((px - apush*ax) / bx, (py - apush *ay) / by);
-        if (bpush > 100) {
-            //continue;
-        }
-        if (apush > 100) {
-            //break;
-        }
-
-        let x = (apush * ax) + (bpush * bx);
-        let y = (apush * ay) + (bpush * by);
-
-        if ((x -px + y - py) === 0) {
-            count.push([apush, bpush]);
-            //console.log(apush, bpush, x, y, px, py);
-        }
-
-
-
+    if (x > px) {
+        return [];
     }
 
-    if (count.length === 0) {
-        continue;
+    if (a < 0 || b < 0) {
+        return [];
     }
-    console.log(count, ax, ay, bx, by, px, py);
-
-    let lowestToken = 999999999;
-
-    for (let [a, b] of count) {
-        let token = a * 3 + b;
-        lowestToken = Math.min(token, lowestToken);
+    if (x % ax !== 0) {
+        return [];
+    }
+    if ((px - x) % bx !== 0) {
+        return [];
     }
 
-    part1 += lowestToken;
+    return [a, b];
 }
 
-console.log(part1);
-console.log(part2);
