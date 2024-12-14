@@ -199,7 +199,7 @@ int main()
     Point_t start = {0};
 
     while (!feof(stdin)) {
-        char c = fgetc(stdin);
+        int c = fgetc(stdin);
 
         if (c == EOF) {
             break;

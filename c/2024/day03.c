@@ -26,7 +26,7 @@ int main()
     int isEnabled = 1;
 
     while (!feof(stdin)) {
-        char c = fgetc(stdin);
+        int c = fgetc(stdin);
 
         if (c == EOF) {
             break;

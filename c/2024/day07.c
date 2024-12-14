@@ -138,7 +138,7 @@ int main()
                 break;
             }
 
-            char c = fgetc(stdin);
+            int c = fgetc(stdin);
 
             if (c == '\n' || c == EOF) {
                 break;

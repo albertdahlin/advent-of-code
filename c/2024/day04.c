@@ -73,7 +73,7 @@ int main()
     int col = 0;
 
     while (!feof(stdin)) {
-        char c = fgetc(stdin);
+        int c = fgetc(stdin);
 
         if (c == EOF) {
             break;

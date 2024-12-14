@@ -27,7 +27,7 @@ Grid_t parseInput(PointArray_t pointByFreq[MAX_FREQ])
     int width = 0;
 
     while (!feof(stdin)) {
-        char c = fgetc(stdin);
+        int c = fgetc(stdin);
 
         if (c == EOF) {
             break;

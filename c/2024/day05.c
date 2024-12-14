@@ -54,7 +54,7 @@ int parseNumbers(uint8_t *nums)
     int lastIdx = 0;
 
     while (!feof(stdin)) {
-        char c = fgetc(stdin);
+        int c = fgetc(stdin);
 
         if (c == EOF) {
             return lastIdx;
@@ -92,7 +92,7 @@ int parseRules()
     int numIdx = 0;
 
     while (!feof(stdin)) {
-        char c = fgetc(stdin);
+        int c = fgetc(stdin);
 
         if (c == EOF) {
             return __LINE__;

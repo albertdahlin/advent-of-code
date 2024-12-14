@@ -110,11 +110,11 @@ int Grid_getMaskAt(Point_t p, uint8_t mask, Grid_t *grid)
 
 void Grid_setBitAt(Point_t p, uint8_t bit, Grid_t *grid)
 {
-    Grid_setMaskAt(p, 1 << bit, grid);
+    Grid_setMaskAt(p, 1U << bit, grid);
 }
 
 int Grid_isBitSetAt(Point_t p, uint8_t bit, Grid_t *grid)
 {
-    return Grid_getMaskAt(p, 1 << bit, grid) > 0;
+    return Grid_getMaskAt(p, 1U << bit, grid) > 0;
 }
 
