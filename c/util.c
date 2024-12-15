@@ -1,16 +1,31 @@
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
 
 #define isDigit(c) (c >= '0' && c <= '9')
 
-int compare(const void *a, const void *b) {
-    int64_t int_a = *((int64_t*)a);
-    int64_t int_b = *((int64_t*)b);
+typedef struct Buffer {
+    uint8_t *data;
+    size_t len;
+    size_t cap;
+} Buffer_t;
 
-    return int_a - int_b;
+
+Buffer_t Buffer_fromFile(FILE *fd) {
+    fseek(fd, 0, SEEK_END);
+
+    size_t len = ftell(fd);
+
+    fseek(fd, 0, SEEK_SET);
+    Buffer_t buf = {0};
+    buf.data = malloc(len);
+    buf.len = fread(buf.data, 1, len, fd);
+    buf.cap = len;
+
+    return buf;
 }
 
-void sort_int64(int64_t *arr, size_t count) {
-    qsort(arr, count, sizeof(int64_t), compare);
+void Buffer_free(Buffer_t buf) {
+    free(buf.data);
 }

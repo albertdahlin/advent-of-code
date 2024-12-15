@@ -1,19 +1,31 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
-#include "../util.c"
 
 #define MAX_ROWS 1001
 #define MAX_VAL 100000
 
+int compare(const void *a, const void *b) {
+    int_fast32_t int_a = *((int_fast32_t*)a);
+    int_fast32_t int_b = *((int_fast32_t*)b);
+
+    return int_a - int_b;
+}
+
 int main()
 {
-    int64_t left[MAX_ROWS];
-    int64_t right[MAX_ROWS];
+    int_fast32_t left[MAX_ROWS];
+    int_fast32_t right[MAX_ROWS];
     size_t count = 0;
 
     for (size_t i = 0; i < MAX_ROWS; i++) {
-        int64_t l, r;
-        int numbersMatches = fscanf(stdin, "%ld %ld", &l, &r);
+        int_fast32_t l, r;
+        int_fast32_t numbersMatches = fscanf(
+            stdin,
+            "%" SCNdFAST32 " %" SCNdFAST32,
+            &l,
+            &r
+        );
 
         if (numbersMatches == EOF) {
             count = i;
@@ -35,16 +47,16 @@ int main()
 
     /* Part 1 */
 
-    sort_int64(left, count);
-    sort_int64(right, count);
+    qsort(left, count, sizeof(int_fast32_t), compare);
+    qsort(right, count, sizeof(int_fast32_t), compare);
 
-    int64_t result = 0;
+    int_fast32_t result = 0;
 
     for (size_t i = 0; i < count; i++) {
         result += labs(left[i] - right[i]);
     }
 
-    printf("%ld\n", result);
+    printf("%" PRIdFAST32 "\n", result);
 
 
     /* Part 2 */
@@ -61,7 +73,7 @@ int main()
         result += left[i] * freq[left[i]];
     }
 
-    printf("%ld\n", result);
+    printf("%" PRIdFAST32 "\n", result);
 
     return 0;
 }

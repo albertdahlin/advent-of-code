@@ -43,20 +43,20 @@ size_t parseInput(uint8_t **buf)
 
 uint64_t solve1(uint8_t *input, size_t len)
 {
-    uint64_t idLow = 0;
-    uint64_t idHigh = (len - 1) / 2;
-    uint64_t lenHigh = input[idHigh * 2];
+    uint_fast32_t idLow = 0;
+    uint_fast32_t idHigh = (len - 1) / 2;
+    uint_fast32_t lenHigh = input[idHigh * 2];
 
     uint64_t checksum = 0;
-    uint64_t idx = 0;
+    uint_fast32_t idx = 0;
 
     while (idLow < idHigh) {
-        uint64_t lenLow = input[idLow * 2];
+        uint_fast32_t lenLow = input[idLow * 2];
 
         checksum += calculateChecksum(lenLow, idx, idLow);
         idx += lenLow;
 
-        uint64_t lenFree = input[idLow * 2 + 1];
+        uint_fast32_t lenFree = input[idLow * 2 + 1];
 
         while (lenFree > 0) {
             if (lenFree < lenHigh) {
