@@ -2,11 +2,15 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-uint64_t arithmeticSum(uint64_t n) {
+uint_fast32_t arithmeticSum(uint_fast32_t n) {
     return n * (n + 1) / 2;
 }
 
-uint64_t calculateChecksum(uint64_t len, uint64_t idx, uint64_t id) {
+uint_fast32_t calculateChecksum(
+    uint_fast32_t len,
+    uint_fast32_t idx,
+    uint_fast32_t id
+) {
     return (arithmeticSum(len - 1) + idx * len) * id;
 }
 
