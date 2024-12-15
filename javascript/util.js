@@ -41,3 +41,37 @@ Map.fromVec = function(arr) {
     return new Map(arr.map(a => [a.join(','), a]));
 }
 
+
+export class Grid {
+    constructor(width, height, fillValue = '.') {
+        this.width = width;
+        this.height = height;
+        this.grid = Array(height).fill().map(() => Array(width).fill(fillValue));
+    }
+
+    at([x, y]) {
+        return this.grid[y][x];
+    }
+
+    set([x, y], c) {
+        this.grid[y][x] = c;
+    }
+
+    print([px, py] = []) {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                if (px === x && py === y) {
+                    process.stdout.write('@');
+                    continue;
+                }
+                process.stdout.write(this.at([x, y]));
+            }
+            process.stdout.write('\n');
+        }
+    }
+    swap(p1, p2) {
+        let c = this.at(p1);
+        this.set(p1, this.at(p2));
+        this.set(p2, c);
+    }
+}

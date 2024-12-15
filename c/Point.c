@@ -1,8 +1,19 @@
+#pragma once
+
+typedef enum Direction {
+    UP = 0,
+    RIGHT,
+    DOWN,
+    LEFT,
+} Direction_t;
+
+
 
 typedef struct Point {
     int x;
     int y;
 } Point_t;
+
 
 static Point_t Point(int x, int y)
 {
@@ -24,6 +35,30 @@ static int Point_isOutside(Point_t p, int width, int height)
     return p.x < 0 || p.x >= width || p.y < 0 || p.y >= height;
 }
 
+// ****** DIRECTION ******
+
+Direction_t Direction_fromArrow(char c)
+{
+    switch (c) {
+        case '^': return UP;
+        case '>': return RIGHT;
+        case 'v': return DOWN;
+        case '<': return LEFT;
+        default: return -1;
+    }
+}
+
+Point_t Direction_toPoint(Direction_t dir)
+{
+    switch (dir) {
+        case UP: return Point(0, -1);
+        case RIGHT: return Point(1, 0);
+        case DOWN: return Point(0, 1);
+        case LEFT: return Point(-1, 0);
+    }
+
+    return Point(0, 0);
+}
 
 // ****** POINT ARRAY ******
 
@@ -70,12 +105,12 @@ void PointArray_free(PointArray_t pa)
 
 typedef struct Grid {
     uint8_t *data;
-    size_t width;
-    size_t height;
+    int width;
+    int height;
 } Grid_t;
 
 
-Grid_t Grid(size_t width, size_t height)
+Grid_t Grid(int width, int height)
 {
     Grid_t grid = {0};
     grid.data = calloc(width * height, sizeof(uint8_t));
@@ -118,3 +153,53 @@ int Grid_isBitSetAt(Point_t p, uint8_t bit, Grid_t *grid)
     return Grid_getMaskAt(p, 1U << bit, grid) > 0;
 }
 
+void Grid_print(Grid_t grid, Point_t pos)
+{
+    for (int y = 0; y < grid.height; y++) {
+        for (int x = 0; x < grid.width; x++) {
+            char c = grid.data[y * grid.width + x];
+            if (x == pos.x && y == pos.y) {
+                putchar('@');
+            } else {
+                putchar(c);
+            }
+        }
+        putchar('\n');
+    }
+}
+
+size_t Grid_idxAt(int x, int y, Grid_t grid)
+{
+    return y * grid.width + x;
+}
+
+int Grid_at(int x, int y, Grid_t grid)
+{
+    if (x < 0 || x >= grid.width || y < 0 || y >= grid.height) {
+        return -1;
+    }
+
+    return grid.data[y * grid.width + x];
+}
+
+int Grid_atPoint(Point_t p, Grid_t grid)
+{
+    return Grid_at(p.x, p.y, grid);
+}
+
+void Grid_set(Point_t p, uint8_t c, Grid_t *grid)
+{
+    if (Point_isOutside(p, grid->width, grid->height)) {
+        return;
+    }
+
+    grid->data[p.y * grid->width + p.x] = c;
+}
+
+void Grid_swap(Point_t a, Point_t b, Grid_t *grid)
+{
+    uint8_t tmp = Grid_atPoint(a, *grid);
+
+    Grid_set(a, Grid_atPoint(b, *grid), grid);
+    Grid_set(b, tmp, grid);
+}
