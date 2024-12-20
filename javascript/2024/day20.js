@@ -70,18 +70,24 @@ for (let y = 0; y < height; y++) {
 
 console.log(part1);
 
-process.exit(0);
-
-
 let part2 = 0;
-for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-        let c = grid.at([x, y]);
+let positions = Array.from(visited.keys()).map(p => p.split(',').map(toInt));
 
-        if (c !== '#') {
+for (let i = 0; i < positions.length; i++) {
+    let s = positions[i];
+
+    for (let j = i + 1; j < positions.length; j++) {
+        let e = positions[j];
+        let len = Grid.manhattanDistance(s, e);
+
+        if (len > 20) {
             continue;
         }
+        let savings = getSavings(s, e, visited);
 
+        if (savings >= 100) {
+            part2 += 1;
+        }
     }
 }
 
@@ -91,7 +97,7 @@ console.log(part2);
 function getSavings(cheatFrom, cheatTo, visited) {
     let f = visited.getVec(cheatFrom);
     let t = visited.getVec(cheatTo);
-    let len = Math.abs(cheatFrom[0] - cheatTo[0]) + Math.abs(cheatFrom[1] - cheatTo[1]);
+    let len = Grid.manhattanDistance(cheatFrom, cheatTo);
     return Math.abs(f - t) - len;
 }
 
