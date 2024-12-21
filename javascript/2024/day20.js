@@ -10,7 +10,6 @@ const rows = fs.readFileSync(0, 'utf-8')
 let width = rows[0].length;
 let height = rows.length;
 
-
 const grid = new Grid(width, height);
 
 let start = null;
