@@ -62,7 +62,6 @@ let part1 = 0;
 let part2 = 0;
 
 let mem = new Map();
-let robotCount = 25;
 
 for (let row of rows) {
     let prevKey = 'A';
