@@ -7,9 +7,7 @@ let rows = fs.readFileSync(0, 'utf-8')
 
 
 let part1 = 0;
-const mem = new Map();
-
-const totalBySequence = new Map();
+let totalBySequence = new Map();
 
 for (let row of rows) {
     let secret = toInt(row);
@@ -59,12 +57,17 @@ function push(n, sequence) {
 
 
 function next(n) {
-    n = n ^ (n << 6);
-    n = n & 16777215;
-    n = n ^ (n >> 5);
-    n = n & 16777215;
-    n = n ^ (n << 11);
-    n = n & 16777215;
+    // Some performance optimizations:
+    // 16777216 is 2^24, or 0x1000000 in hex.
+    // x % 0x1000000 can be converted to x & 0xFFFFFF (0x1000000 - 1)
+    // Multiplication and division can be converted to bit shift operations
+    // since we're dealing with powers of 2.
+    n ^= (n << 6);
+    n &= 0xFFFFFF;
+    n ^= (n >> 5);
+    n &= 0xFFFFFF;
+    n ^= (n << 11);
+    n &= 0xFFFFFF;
 
     return n;
 }

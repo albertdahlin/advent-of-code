@@ -39,8 +39,8 @@ for i in {1..25}; do
             IFS=$'\n' read -r -d '' -a OUT <<< $( { time $FILE$N.$EXT < input/$YEAR/day$N.txt; } 2>&1 )
         fi
         printf "% 8s" ${OUT[3]#user	}
-        printf "% 19s" ${OUT[0]}
-        printf "% 17s" ${OUT[1]}
+        printf " % -19s" ${OUT[0]}
+        printf " ${OUT[1]} "
         if [ "${ANSWER[i]}" != "${OUT[0]} ${OUT[1]}" ]; then
             echo " FAIL, Expected: ${ANSWER[i]}"
         else
