@@ -38,26 +38,19 @@ sqDistance ( x1, y1, z1 ) ( x2, y2, z2 ) =
     sq (x1 - x2) + sq (y1 - y2) + sq (z1 - z2)
 
 
-unionFind : Point -> Point -> List (Set Point) -> List (Set Point) -> List (Set Point)
-unionFind p1 p2 setsToUnion sets =
+unionFind : Set Point -> List (Set Point) -> List (Set Point)
+unionFind union sets =
     case sets of
         [] ->
-            [ List.foldl
-                Set.union
-                (Set.fromList [ p1, p2 ])
-                setsToUnion
+            [ union
             ]
 
         set :: rest ->
-            if Set.member p1 set || Set.member p2 set then
-                unionFind
-                    p1
-                    p2
-                    (set :: setsToUnion)
-                    rest
+            if Set.size (Set.intersect union set) > 0 then
+                unionFind (Set.union set union) rest
 
             else
-                set :: unionFind p1 p2 setsToUnion rest
+                set :: unionFind union rest
 
 
 unionFirstN : Int -> List (Set Point) -> List ( Point, Point ) -> List (Set Point)
@@ -73,7 +66,7 @@ unionFirstN n sets pairs =
             ( p1, p2 ) :: ps ->
                 unionFirstN
                     (n - 1)
-                    (unionFind p1 p2 [] sets)
+                    (unionFind (Set.fromList [ p1, p2 ]) sets)
                     ps
 
 
@@ -111,7 +104,7 @@ lastUnifyingPair size sets pairs =
         ( p1, p2 ) :: ps ->
             let
                 sets2 =
-                    unionFind p1 p2 [] sets
+                    unionFind (Set.fromList [ p1, p2 ]) sets
             in
             if isDone size sets2 then
                 Just ( p1, p2 )
